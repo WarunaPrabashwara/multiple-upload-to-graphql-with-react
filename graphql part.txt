@@ -1,0 +1,93 @@
+//schema.js
+uploadFilemodified(tag: String! , files: [Upload!]! ): File!
+
+// mutation.js  
+  uploadFilemodified: async (parent, args) => {
+    console.log(args)
+    const hotel_id = 1
+    await args.files.forEach( async (file, index, array) =>{
+      await args.files[index].promise.then( async data=>{ // kalin file kiyana eka awe nathi nisa timeout ehema use kala. but it is not a good method. but me promise eka resolve wenakan idala ilagata file kiyana eka lihala ganna pluwan. eka timeout danwata wada hodai. mokada timeout eka limited ne. e welawa athulatha awe nattham thawa inna epaya
+       // console.log( args.files[index].file) 
+       const { createReadStream, filename, mimetype } = args.files[index].file;
+       const stream = createReadStream();
+       const assetUniqName = hotel_id.toString() + '--' + Math.floor(Math.random() * 30000).toString() + filename
+        // __dirname  eken enne me file eka tyena directory eka 
+        // require('path').resolve('./') eken enne project eke root eka 
+        const pathName = path.join(require('path').resolve('./'), `uploads/images/${assetUniqName}`);
+
+        await stream.pipe(fs.createWriteStream(pathName));
+        const url = `uploads/images/${assetUniqName}`;
+        
+      }).catch(e=>{console.log(e)})
+    })
+    
+    /*
+    console.log(args.files)
+    const { createReadStream, filename, mimetype } = await args.files[0].file;
+    console.log('ddddddd')
+    const stream = createReadStream();
+    console.log('qqq2q')
+    setTimeout(async function () {
+      //      console.log( await args )
+      console.log("enterd")
+      const hotel_id = 1
+      await args.files.forEach(async (file, index, array) => {
+        //        const { createReadStream, filename, mimetype } = await  file.file ;   // meken gatthoth ehema createReadStream eka hariyana enne naha . () bracket dammama kelawenwa . e nisa pahala widihata ganne 
+        const { createReadStream, filename, mimetype } = args.files[index].file;
+        console.log('ddddddd')
+        //  const stream = createReadStream();
+        console.log('qqq2q')
+        const assetUniqName = hotel_id.toString() + '--' + Math.floor(Math.random() * 30000).toString() + filename
+        // __dirname  eken enne me file eka tyena directory eka 
+        // require('path').resolve('./') eken enne project eke root eka 
+        const pathName = path.join(require('path').resolve('./'), `uploads/images/${assetUniqName}`);
+
+        await stream.pipe(fs.createWriteStream(pathName));
+        const url = `http://localhost:4001/images/${assetUniqName}`;
+      })
+      await Promise.allSettled(args.files.map(async (file) => {
+        //   console.log(await file)
+        const { createReadStream, filename, mimetype } = await file.file;
+        console.log('ddddddd')
+        const stream = createReadStream();
+        console.log('qq')
+        //   console.log( await args.tag )
+        // const assetUniqName = fileRenamer(filename);
+        const assetUniqName = hotel_id.toString() + '--' + Math.floor(Math.random() * 30000).toString() + filename
+        // __dirname  eken enne me file eka tyena directory eka 
+        // require('path').resolve('./') eken enne project eke root eka 
+        const pathName = path.join(require('path').resolve('./'), `uploads/images/${assetUniqName}`);
+        await stream.pipe(fs.createWriteStream(pathName));
+        const url = `http://localhost:4001/images/${assetUniqName}`;
+      })).then(() => {
+        console.log("dffff");
+      }).catch((err) => {
+        console.log(err);
+      });
+    }, 1000); // podi timeout ekk dunne nAttham images okkoma resolve wenne naha. samahara ewage file kiyana eka enne naha promise eka resolve wenne naha 
+    return { url };
+    */
+
+    //  const filePromises = args.files.map(async (file) => {
+    //  console.log( await file )      
+    //  });
+    //  console.log(  Promise.all(filePromises)  )
+
+
+    //    console.log("hii")
+    //  console.log( await args )
+    // console.log( await length(  args.file ) )
+    //    const { createReadStream, filename, mimetype } = await args.files.file;
+    //    const stream = createReadStream();
+    //   console.log( await args.tag )
+    // const assetUniqName = fileRenamer(filename);
+    //    const assetUniqName = hotel_id.toString() + '--' + Math.floor(Math.random() * 30000).toString() + filename
+    // __dirname  eken enne me file eka tyena directory eka 
+    // require('path').resolve('./') eken enne project eke root eka 
+    //    const pathName = path.join(require('path').resolve('./'), `uploads/images/${assetUniqName}`);
+
+    //    await stream.pipe(fs.createWriteStream(pathName));
+    //    const url = `http://localhost:4001/images/${assetUniqName}`;
+  },
+
+

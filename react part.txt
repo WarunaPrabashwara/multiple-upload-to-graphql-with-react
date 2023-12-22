@@ -1,0 +1,163 @@
+import logo from './logo.svg';
+import './App.css';
+
+import axios from "axios";
+
+function App() {
+
+  const uploadFile = async (files) => {
+    // Create a FormData object
+    console.log(files)
+    console.log(files.length)
+    //  files = Array.from(files )
+    console.log(files)
+    const formData = new FormData();
+    //   formData.append('file', files);
+    console.log("ddd")
+    
+    
+    try {
+
+      const axiosWithHeaders = axios.create({
+        baseURL: 'http://localhost',
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          // Add other common headers
+        },
+      });
+
+      var graphqlQuery = `
+      mutation uploadFilemodified($files: [Upload! ]!) {
+        uploadFilemodified( tag:"hji", files: $files) {
+          url
+        }
+      }
+    `
+      let array =[]
+      for( let i = 0; i < files.length ; i++ ){
+        array.push( null )
+      }
+
+      const operations = JSON.stringify({
+        query: graphqlQuery,
+        variables: {
+          files: array
+        },
+      });
+      
+      const formData = new FormData();
+      formData.append('operations', operations);
+      let stringformap = {}
+      for ( let i = 0; i < files.length; i++) {
+        if (i == files.length - 1) {
+         // stringformap = stringformap + "'" + i.toString() +  "'" + ":['variables.files." + i.toString() + "'] }" ;
+        }
+        else {
+         // stringformap = stringformap +  "'" + i.toString() +  "'" + ":['variables.files." + i.toString() + "']"+ "," ;
+        }
+        stringformap[ i.toString() ] = ["variables.files." + i.toString()  ]
+      }
+     // console.log( stringformap )
+      const map = JSON.stringify( stringformap );
+     // console.log( map )
+      formData.append('map', map);     
+      for ( let i = 0; i < files.length; i++) {
+        formData.append( i.toString()  , files[i]);
+      }
+
+      const graphqlEndpoint = 'https://localhost/graphql'
+
+      const headers = {
+        'Content-Type': 'multipart/form-data',
+        // Add other common headers
+      }
+
+      axios.post(graphqlEndpoint, formData, { headers })
+        .then(response => {
+          console.log('GraphQL Response:', response.data);
+        })
+        .catch(error => {
+          console.error('GraphQL Request Error:', error);
+        });
+
+
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    }
+  };
+
+  const uploadSingleFile = async (file) => {
+    // Create a FormData object
+    console.log(file)
+    console.log(file.length)
+    // file = Array.from(file )
+    console.log(file)
+    const formData = new FormData();
+    //   formData.append('file', files);
+    console.log("ddd")
+    try {
+
+      const axiosWithHeaders = axios.create({
+        baseURL: 'http://localhost',
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          // Add other common headers
+        },
+      });
+
+      var graphqlQuery = `
+      mutation uploadFile($file: Upload!) {
+        uploadFile( file: $file) {
+          url
+        }
+      }
+    `
+
+      const operations = JSON.stringify({
+        query: graphqlQuery,
+        variables: {
+          file: null
+        },
+      });
+
+      const map = JSON.stringify({ '0': ['variables.file'] });
+
+      const formData = new FormData();
+      formData.append('operations', operations);
+      formData.append('map', map);
+      formData.append('0', file);
+
+      const graphqlEndpoint = 'http://localhost/graphql'
+
+      const headers = {
+        'Content-Type': 'multipart/form-data',
+        // Add other common headers
+      }
+
+      axios.post(graphqlEndpoint, formData, { headers })
+        .then(response => {
+          console.log('GraphQL Response:', response.data);
+        })
+        .catch(error => {
+          console.error('GraphQL Request Error:', error);
+        });
+
+
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    }
+  };
+
+
+  return (
+    <div>
+      
+      <input type="file" id='inputoffiles' onChange={(event) => console.log(event.target.files)} multiple />
+      <button onClick={(vent)=> uploadFile(  document.getElementById( 'inputoffiles' ).files )}> click me </button>
+
+      <input type="file" onChange={(event) => uploadSingleFile(event.target.files[0])} />
+    </div>
+  );
+}
+
+export default App;
